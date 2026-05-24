@@ -162,6 +162,9 @@
             background: rgba(143, 160, 181, 0.3);
             border-radius: 4px;
         }
+        .view-hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="p-3 space-y-3 min-h-screen vue-pc-active flex flex-col">
@@ -176,7 +179,18 @@
                 <p class="text-[10px] font-extrabold text-[#c89b3c] tracking-wider uppercase">PAR: DAOUD BRAHIM</p>
             </div>
         </div>
-
+        <div class="flex items-center gap-1 bg-[#0b0f19]/60 p-1 rounded border border-slate-700/60">
+            <button id="btn-tab-cession" class="px-3 py-1 rounded text-xs font-bold bg-amber-600 text-white uppercase tracking-wider transition-all">
+                📊 Cessions
+            </button>
+            <button id="btn-tab-analyseur" class="px-3 py-1 rounded text-xs font-bold text-slate-400 hover:text-white uppercase tracking-wider transition-all">
+                ⚡ Analyseur CC
+            </button>
+        </div>
+        <div id="wrapper-month-select" class="flex items-center gap-2 px-2.5 py-1 rounded border border-slate-700 bg-[#0f172a]">
+            <label for="monthSelector" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Vue :</label>
+            <select id="monthSelector" class="header-select text-xs font-bold outline-none cursor-pointer p-0 rounded"></select>
+        </div>
         <div class="flex items-center gap-3">
             <button id="installBtn" class="hidden items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold uppercase bg-amber-600 hover:bg-amber-700 text-white transition-all shadow">
                 📦 Installer l'App
@@ -193,7 +207,7 @@
         </div>
     </header>
 
-    <main class="main-container grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-0">
+    <main id="workspace-cession" class="main-container grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-0">
         
         <div class="col-span-12 lg:col-span-5 flex flex-col gap-3 min-h-0 h-full">
             
@@ -307,6 +321,113 @@
             </div>
 
         </div>
+    </main> <main id="workspace-analyseur" class="main-container grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-0 view-hidden">
+        
+        <div class="col-span-12 lg:col-span-3 flex flex-col gap-3 h-full">
+            <div class="dashboard-card p-4 space-y-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">📥 Charger Fichier Profil (.csv)</h3>
+                    <input type="file" id="ana-file-picker" accept=".csv" class="hidden">
+                    <label for="ana-file-picker" class="flex flex-col items-center justify-center border-2 border-dashed border-slate-700 rounded p-4 text-center cursor-pointer hover:border-amber-500 transition-colors bg-slate-950/30">
+                        <span class="text-2xl mb-1">⚡</span>
+                        <span class="text-xs font-semibold text-slate-300">Importer un fichier</span>
+                        <span class="text-[10px] text-slate-500 mt-1 truncate max-w-full inline-block" id="ana-file-status">Extraction (CCH) non chargée</span>
+                    </label>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">⚙️ Puissance Transfo (kVA)</label>
+                    <input type="number" id="ana-nominal-power-input" value="250" min="1" step="50" class="w-full themed-select text-xs font-bold rounded p-2 outline-none border border-slate-800">
+                </div>
+                
+                <div id="ana-format-badge" class="hidden p-2 rounded bg-emerald-950/40 border border-emerald-800 text-center">
+                    <p class="text-[10px] text-emerald-400 uppercase font-extrabold tracking-wider">Structure du Profil</p>
+                    <p class="text-xs font-bold text-white mt-0.5" id="ana-format-text">-</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-card p-3 flex-1 overflow-y-auto hidden" id="ana-sidebar-metrics">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-1 mb-2">📈 Métriques Calculées</h3>
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Puissance Import Max</span>
+                        <strong class="text-sm font-extrabold text-orange-400" id="m-ana-pmax-imp">0.00 kW</strong>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Puissance Export Max</span>
+                        <strong class="text-sm font-extrabold text-emerald-400" id="m-ana-pmax-exp">0.00 kW</strong>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Taux de Charge Max</span>
+                        <strong class="text-sm font-extrabold text-rose-500" id="m-ana-tcmax">0.0 %</strong>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Facteur Puissance Moyen (Cos φ)</span>
+                        <strong class="text-sm font-extrabold text-cyan-400" id="m-ana-cosphi">1.000</strong>
+                    </div>
+                    <div class="border-t border-slate-800 pt-2">
+                        <span class="text-[10px] text-slate-400 block">Énergie Active Importée</span>
+                        <span class="text-xs font-bold text-white" id="m-ana-eactive-imp">0 kWh</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Énergie Réactive Importée</span>
+                        <span class="text-xs font-bold text-white" id="m-ana-ereactive-imp">0 kVARh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-9 flex flex-col gap-3 h-full overflow-y-auto pr-1" id="ana-fallback-msg">
+            <div class="dashboard-card flex flex-col items-center justify-center p-12 text-center flex-1">
+                <span class="text-4xl animate-pulse">📈</span>
+                <h3 class="text-base font-bold mt-3">Analyseur de Courbes de Charge</h3>
+                <p class="text-xs text-slate-400 max-w-md mt-1">Veuillez importer un fichier d'extraction de compteur (.csv) dans la barre latérale pour lancer le décodage automatique des profils électriques régionaux.</p>
+            </div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-9 flex flex-col gap-3 h-full overflow-y-auto pr-1 hidden" id="ana-dashboard-view">
+            <div class="flex gap-2 border-b border-slate-800 pb-1 shrink-0">
+                <button class="ana-tab-btn text-xs font-bold px-3 py-1 border-b-2 border-amber-500 text-white" data-target="c-ana-temp">📈 Graphiques Temporels</button>
+                <button class="ana-tab-btn text-xs font-bold px-3 py-1 text-slate-400 hover:text-white" data-target="c-ana-charge">📊 Taux de Charge</button>
+                <button class="ana-tab-btn text-xs font-bold px-3 py-1 text-slate-400 hover:text-white" data-target="c-ana-sorted">⏳ Courbe de Charge Triée</button>
+                <button class="ana-tab-btn text-xs font-bold px-3 py-1 text-slate-400 hover:text-white" data-target="c-ana-electrical">⚡ Profil Électrique (V/I)</button>
+                <button class="ana-tab-btn text-xs font-bold px-3 py-1 text-slate-400 hover:text-white" data-target="c-ana-raw">📋 Données Brutes</button>
+            </div>
+
+            <div id="c-ana-temp" class="ana-tab-content flex-1 min-h-[380px] dashboard-card p-2"></div>
+            
+            <div id="c-ana-charge" class="ana-tab-content flex-1 min-h-[380px] grid grid-cols-1 md:grid-cols-12 gap-3 hidden">
+                <div class="dashboard-card p-2 md:col-span-7" id="c-ana-charge-timeline"></div>
+                <div class="dashboard-card p-3 md:col-span-5 flex flex-col justify-between">
+                    <div>
+                        <h4 class="card-title mb-2">Répartition des États de Charge</h4>
+                        <div id="c-ana-charge-pie" class="w-full h-[220px]"></div>
+                    </div>
+                    <div class="p-2 rounded bg-slate-950/40 border border-slate-800 text-xs leading-relaxed" id="c-ana-charge-diagnostic"></div>
+                </div>
+            </div>
+            
+            <div id="c-ana-sorted" class="ana-tab-content flex-1 min-h-[380px] dashboard-card p-2 hidden"></div>
+            
+            <div id="c-ana-electrical" class="ana-tab-content flex-1 min-h-[380px] grid grid-cols-1 md:grid-cols-2 gap-3 hidden">
+                <div class="dashboard-card p-2" id="c-ana-elec-voltage"></div>
+                <div class="dashboard-card p-2" id="c-ana-elec-current"></div>
+            </div>
+            
+            <div id="c-ana-raw" class="ana-tab-content flex-1 dashboard-card p-3 hidden flex flex-col justify-between">
+                <div class="overflow-auto max-h-[320px] border border-slate-800 rounded">
+                    <table class="w-full text-[11px] text-left border-collapse" id="tbl-ana-preview">
+                        <thead class="bg-slate-950/60 sticky top-0 border-b border-slate-800 text-slate-400 font-bold uppercase"></thead>
+                        <tbody class="divide-y divide-slate-800/40"></tbody>
+                    </table>
+                </div>
+                <div class="pt-2 text-right">
+                    <button id="btn-ana-export-csv" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-bold uppercase transition-colors">
+                        📥 Télécharger les données nettoyées en CSV
+                    </button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <div id="map-tooltip" class="fixed opacity-0 pointer-events-none bg-slate-900 border border-slate-700 text-white p-2.5 rounded shadow-2xl transition-opacity duration-150 z-[9999] min-w-[200px]"></div>
@@ -389,7 +510,8 @@
         let selectedTransformer = null;
         
         let treemapChart, tarifsChart, provinceChart, transformersChart, monthlyChart, errorChart, gaugeChart;
-
+        let parsedCleanedData = null;
+        let anaChartsRegistry = {};
         function parseNumericValue(val) {
             if (!val) return 0;
             return parseFloat(val.replace(/"/g, '').replace(/,/g, '')) || 0;
@@ -535,7 +657,13 @@
             updateDashboard();
             renderMonthlyChart();
             
-            window.addEventListener('resize', resizeCharts);
+            setupAnalyseurCC();
+            setupTabNavigation();
+            
+            window.addEventListener('resize', () => {
+                resizeCharts();
+                resizeAnalyseurCharts(); // Permet le redimensionnement fluide des nouveaux graphiques
+            });
         }
 
         function updateVisualTitles() {
@@ -929,6 +1057,360 @@
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
+        // =========================================================================
+        // FONCTIONS COMPLÉMENTAIRES DE GESTION DU WORKSPACE ET DE L'ENGIN CC
+        // =========================================================================
+        function setupTabNavigation() {
+            const btnCession = document.getElementById('btn-tab-cession');
+            const btnAnalyseur = document.getElementById('btn-tab-analyseur');
+            const viewCession = document.getElementById('workspace-cession');
+            const viewAnalyseur = document.getElementById('workspace-analyseur');
+            const monthWrapper = document.getElementById('wrapper-month-select');
+
+            btnCession.addEventListener('click', () => {
+                viewCession.classList.remove('view-hidden');
+                viewAnalyseur.classList.add('view-hidden');
+                monthWrapper.classList.remove('view-hidden');
+                
+                btnCession.className = "px-3 py-1 rounded text-xs font-bold bg-amber-600 text-white uppercase tracking-wider transition-all";
+                btnAnalyseur.className = "px-3 py-1 rounded text-xs font-bold text-slate-400 hover:text-white uppercase tracking-wider transition-all";
+                resizeCharts();
+            });
+
+            btnAnalyseur.addEventListener('click', () => {
+                viewCession.classList.add('view-hidden');
+                viewAnalyseur.classList.remove('view-hidden');
+                monthWrapper.classList.add('view-hidden');
+                
+                btnAnalyseur.className = "px-3 py-1 rounded text-xs font-bold bg-amber-600 text-white uppercase tracking-wider transition-all";
+                btnCession.className = "px-3 py-1 rounded text-xs font-bold text-slate-400 hover:text-white uppercase tracking-wider transition-all";
+                resizeAnalyseurCharts();
+            });
+        }
+
+        function setupAnalyseurCC() {
+            const filePicker = document.getElementById('ana-file-picker');
+            const pwrInput = document.getElementById('ana-nominal-power-input');
+
+            filePicker.addEventListener('change', (e) => {
+                const loadedFile = e.target.files[0];
+                if (!loadedFile) return;
+                document.getElementById('ana-file-status').textContent = loadedFile.name;
+                
+                const fileReader = new FileReader();
+                fileReader.onload = (event) => {
+                    parseAndProcessCCH(event.target.result, parseFloat(pwrInput.value) || 250);
+                };
+                fileReader.readAsText(loadedFile);
+            });
+
+            pwrInput.addEventListener('change', function() {
+                if (parsedCleanedData && filePicker.files[0]) {
+                    computeMetricsAndRender(parseFloat(this.value) || 250);
+                }
+            });
+
+            document.querySelectorAll('.ana-tab-btn').forEach(tabBtn => {
+                tabBtn.addEventListener('click', function() {
+                    document.querySelectorAll('.ana-tab-btn').forEach(b => b.className = "ana-tab-btn text-xs font-bold px-3 py-1 text-slate-400 hover:text-white");
+                    document.querySelectorAll('.ana-tab-content').forEach(c => c.classList.add('hidden'));
+
+                    this.className = "ana-tab-btn text-xs font-bold px-3 py-1 border-b-2 border-amber-500 text-white";
+                    const targetContainer = this.getAttribute('data-target');
+                    document.getElementById(targetContainer).classList.remove('hidden');
+
+                    if (anaChartsRegistry[targetContainer]) anaChartsRegistry[targetContainer].resize();
+                    if (targetContainer === 'c-ana-charge') {
+                        if (anaChartsRegistry['c-ana-charge-timeline']) anaChartsRegistry['c-ana-charge-timeline'].resize();
+                        if (anaChartsRegistry['c-ana-charge-pie']) anaChartsRegistry['c-ana-charge-pie'].resize();
+                    }
+                    if (targetContainer === 'c-ana-electrical') {
+                        if (anaChartsRegistry['c-ana-elec-voltage']) anaChartsRegistry['c-ana-elec-voltage'].resize();
+                        if (anaChartsRegistry['c-ana-elec-current']) anaChartsRegistry['c-ana-elec-current'].resize();
+                    }
+                });
+            });
+        }
+
+        function parseAndProcessCCH(csvRawText, nominalPower) {
+            const csvRows = csvRawText.split('\n').map(r => r.trim()).filter(r => r);
+            if (csvRows.length < 2) return alert("Fichier vide ou corrompu.");
+
+            let detectedFormat = "Format Standard / Générique";
+            let sanitizedDataset = [];
+            const headerSample = csvRows.slice(0, 5).join("");
+
+            if (headerSample.includes("Numéro de série") || headerSample.includes("Heure de démarrage") || headerSample.includes("Horloge")) {
+                detectedFormat = "Format Rapport Triphasé (Type CLOU)";
+                const headerCols = csvRows[3].split(',');
+                
+                let iDate = headerCols.findIndex(c => c.includes("Horloge"));
+                let iPimp = headerCols.findIndex(c => c.includes("Active +(kW)") || c.includes("puissance active +(kW)"));
+                let iPexp = headerCols.findIndex(c => c.includes("Active-(kW)") || c.includes("puissance active-(kW)"));
+                let iQimp = headerCols.findIndex(c => c.includes("réactive +(kvar)"));
+                let iQexp = headerCols.findIndex(c => c.includes("réactive -(kvar)"));
+                
+                let iV1 = headerCols.findIndex(c => c.includes("L1 Tension"));
+                let iV2 = headerCols.findIndex(c => c.includes("L2 Tension"));
+                let iV3 = headerCols.findIndex(c => c.includes("L3 Tension"));
+                let iI1 = headerCols.findIndex(c => c.includes("L1 Courant"));
+                let iI2 = headerCols.findIndex(c => c.includes("L2 Courant"));
+                let iI3 = headerCols.findIndex(c => c.includes("L3 Courant"));
+
+                for (let x = 4; x < csvRows.length; x++) {
+                    let cells = csvRows[x].split(',');
+                    if (cells.length < Math.max(iDate, iPimp)) continue;
+
+                    sanitizedDataset.push({
+                        time: cells[iDate],
+                        p_imp: parseFloat(cells[iPimp]) || 0,
+                        p_exp: iPexp !== -1 ? parseFloat(cells[iPexp]) || 0 : 0,
+                        q_imp: iQimp !== -1 ? parseFloat(cells[iQimp]) || 0 : 0,
+                        q_exp: iQexp !== -1 ? parseFloat(cells[iQexp]) || 0 : 0,
+                        vl1: iV1 !== -1 ? parseFloat(cells[iV1]) : null,
+                        vl2: iV2 !== -1 ? parseFloat(cells[iV2]) : null,
+                        vl3: iV3 !== -1 ? parseFloat(cells[iV3]) : null,
+                        il1: iI1 !== -1 ? parseFloat(cells[iI1]) : null,
+                        il2: iI2 !== -1 ? parseFloat(cells[iI2]) : null,
+                        il3: iI3 !== -1 ? parseFloat(cells[iI3]) : null
+                    });
+                }
+            } 
+            else if (headerSample.includes("Fin de période") || headerSample.includes("Canal 1")) {
+                detectedFormat = "Format Multi-Canaux Énergie (Type ITRON)";
+                const headerCols = csvRows[0].split(',');
+                let iPimp = headerCols.findIndex(c => c.includes("Canal 1"));
+                let iPexp = headerCols.findIndex(c => c.includes("Canal 2"));
+                let iQimp = headerCols.findIndex(c => c.includes("Canal 3"));
+                let iQexp = headerCols.findIndex(c => c.includes("Canal 4"));
+                
+                let forwardDate = "";
+
+                for (let x = 1; x < csvRows.length; x++) {
+                    let cells = csvRows[x].split(',');
+                    if (cells.length < 3) continue;
+
+                    if (cells[0].trim()) { forwardDate = cells[0].trim(); }
+                    let clockTime = cells[1].trim();
+
+                    sanitizedDataset.push({
+                        time: forwardDate + " " + clockTime,
+                        p_imp: iPimp !== -1 ? parseFloat(cells[iPimp]) || 0 : 0,
+                        p_exp: iPexp !== -1 ? parseFloat(cells[iPexp]) || 0 : 0,
+                        q_imp: iQimp !== -1 ? parseFloat(cells[iQimp]) || 0 : 0,
+                        q_exp: iQexp !== -1 ? parseFloat(cells[iQexp]) || 0 : 0,
+                        vl1: null, vl2: null, vl3: null, il1: null, il2: null, il3: null
+                    });
+                }
+            }
+            else {
+                for (let x = 1; x < csvRows.length; x++) {
+                    let cells = csvRows[x].split(',');
+                    if (cells.length < 2) continue;
+                    sanitizedDataset.push({
+                        time: cells[0], p_imp: parseFloat(cells[1]) || 0, p_exp: 0, q_imp: 0, q_exp: 0,
+                        vl1: null, vl2: null, vl3: null, il1: null, il2: null, il3: null
+                    });
+                }
+            }
+
+            document.getElementById('ana-format-badge').classList.remove('hidden');
+            document.getElementById('ana-format-text').textContent = detectedFormat;
+
+            parsedCleanedData = sanitizedDataset;
+            computeMetricsAndRender(nominalPower);
+        }
+
+        function computeMetricsAndRender(nominalPower) {
+            if (!parsedCleanedData || parsedCleanedData.length === 0) return;
+
+            let maxPImp = 0, maxPExp = 0, maxTC = 0, sumCosPhi = 0;
+            let totalPImp = 0, totalQImp = 0;
+            let timeStepMin = 10; 
+
+            parsedCleanedData.forEach(row => {
+                if (row.p_imp > maxPImp) maxPImp = row.p_imp;
+                if (row.p_exp > maxPExp) maxPExp = row.p_exp;
+
+                row.s_apparent = Math.sqrt(Math.pow(row.p_imp + row.p_exp, 2) + Math.pow(row.q_imp + row.q_exp, 2));
+                row.tc_rate = (row.s_apparent / nominalPower) * 100;
+                if (row.tc_rate > maxTC) maxTC = row.tc_rate;
+
+                row.cos_phi_instant = row.s_apparent > 0 ? (row.p_imp + row.p_exp) / row.s_apparent : 1.0;
+                sumCosPhi += row.cos_phi_instant;
+
+                totalPImp += row.p_imp;
+                totalQImp += row.q_imp;
+            });
+
+            let ptsCount = parsedCleanedData.length;
+            let integratedKwh = totalPImp * (timeStepMin / 60);
+            let integratedKvarh = totalQImp * (timeStepMin / 60);
+
+            document.getElementById('ana-sidebar-metrics').classList.remove('hidden');
+            document.getElementById('m-ana-pmax-imp').textContent = maxPImp.toFixed(2) + " kW";
+            document.getElementById('m-ana-pmax-exp').textContent = maxPExp.toFixed(2) + " kW";
+            document.getElementById('m-ana-tcmax').textContent = maxTC.toFixed(1) + " %";
+            document.getElementById('m-ana-cosphi').textContent = (sumCosPhi / ptsCount).toFixed(3);
+            document.getElementById('m-ana-eactive-imp').textContent = formatNumber(integratedKwh) + " kWh";
+            document.getElementById('m-ana-ereactive-imp').textContent = formatNumber(integratedKvarh) + " kVARh";
+
+            document.getElementById('ana-fallback-msg').classList.add('hidden');
+            document.getElementById('ana-dashboard-view').classList.remove('hidden');
+
+            renderAnaCharts(nominalPower, maxTC);
+            buildAnaPreviewTable();
+        }
+
+        function renderAnaCharts(nominalPower, maxTC) {
+            let c = getChartColors();
+            let timelineAxis = parsedCleanedData.map(r => r.time);
+
+            anaChartsRegistry['c-ana-temp'] = echarts.init(document.getElementById('c-ana-temp'));
+            anaChartsRegistry['c-ana-temp'].setOption({
+                tooltip: { trigger: 'axis' },
+                legend: { textStyle: { color: c.text }, fontStyle: 'bold' },
+                xAxis: { type: 'category', data: timelineAxis, axisLabel: { color: c.text } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: c.splitLine } }, axisLabel: { color: c.text } },
+                series: [
+                    { name: 'P Active Import (kW)', type: 'line', data: parsedCleanedData.map(r => r.p_imp), itemStyle: { color: 'orange' } },
+                    { name: 'Q Réactive Import (kvar)', type: 'line', data: parsedCleanedData.map(r => r.q_imp), itemStyle: { color: 'blue' }, lineStyle: { type: 'dashed' } },
+                    { name: 'S Apparente (kVA)', type: 'line', data: parsedCleanedData.map(r => r.s_apparent), itemStyle: { color: 'darkturquoise' } }
+                ]
+            }, true);
+
+            anaChartsRegistry['c-ana-charge-timeline'] = echarts.init(document.getElementById('c-ana-charge-timeline'));
+            anaChartsRegistry['c-ana-charge-timeline'].setOption({
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: timelineAxis, axisLabel: { color: c.text } },
+                yAxis: { type: 'value', max: Math.max(110, Math.round(maxTC + 10)), splitLine: { lineStyle: { color: c.splitLine } }, axisLabel: { color: c.text } },
+                series: [{
+                    name: 'Taux de Charge (%)', type: 'line', data: parsedCleanedData.map(r => r.tc_rate),
+                    itemStyle: { color: 'crimson' }, areaStyle: { color: 'rgba(220, 38, 38, 0.1)' },
+                    markLine: {
+                        data: [
+                            { yAxis: 80, name: 'Vigilance', lineStyle: { color: 'orange', type: 'dashed' } },
+                            { yAxis: 100, name: 'Surcharge', lineStyle: { color: 'red', type: 'dashed' } }
+                        ]
+                    }
+                }]
+            }, true);
+
+            let und = 0, nrm = 0, hgh = 0, ovr = 0;
+            parsedCleanedData.forEach(r => {
+                if (r.tc_rate < 30) und++;
+                else if (r.tc_rate < 80) nrm++;
+                else if (r.tc_rate < 100) hgh++;
+                else ovr++;
+            });
+
+            anaChartsRegistry['c-ana-charge-pie'] = echarts.init(document.getElementById('c-ana-charge-pie'));
+            anaChartsRegistry['c-ana-charge-pie'].setOption({
+                tooltip: { trigger: 'item' },
+                color: ['#64748B', '#10B981', '#F59E0B', '#EF4444'],
+                series: [{
+                    type: 'pie', radius: ['42%', '75%'], label: { show: false },
+                    data: [
+                        { value: und, name: 'Sous-charge (<30%)' },
+                        { value: nrm, name: 'Normal (30-80%)' },
+                        { value: hgh, name: 'Forte Charge (80-100%)' },
+                        { value: ovr, name: 'Surcharge (>=100%)' }
+                    ]
+                }]
+            }, true);
+
+            let textContainer = document.getElementById('c-ana-charge-diagnostic');
+            let overPct = ((ovr / parsedCleanedData.length) * 100).toFixed(1);
+            if (maxTC >= 100) {
+                textContainer.innerHTML = `🚨 <strong class="text-rose-500">Surcharges Constatées :</strong> Le transformateur a dépassé sa capacité nominale de puissance apparente pendant <span class="font-bold">${overPct}%</span> de la période spécifiée. Augmentation de puissance conseillée.`;
+            } else if (maxTC >= 80) {
+                textContainer.innerHTML = `⚠️ <strong class="text-amber-500">Seuil de Vigilance :</strong> Le réseau flirte avec les limites de tolérance opérationnelles du matériel (Pic max à ${maxTC.toFixed(1)}%). Évolution à monitorer.`;
+            } else {
+                textContainer.innerHTML = `✅ <strong class="text-emerald-500">Dimensionnement Conforme :</strong> Les profils de puissance restent bien équilibrés et sécurisés en dessous de la barre critique des 80%.`;
+            }
+
+            let sortedApparentPower = parsedCleanedData.map(r => r.s_apparent).sort((a, b) => b - a);
+            anaChartsRegistry['c-ana-sorted'] = echarts.init(document.getElementById('c-ana-sorted'));
+            anaChartsRegistry['c-ana-sorted'].setOption({
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: sortedApparentPower.map((_, i) => i), axisLabel: { show: false } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: c.splitLine } }, axisLabel: { color: c.text }, name: 'Puissance (kVA)' },
+                series: [{ name: 'S Classée', type: 'line', data: sortedApparentPower, itemStyle: { color: 'crimson' }, lineStyle: { width: 3 } }]
+            }, true);
+
+            if (parsedCleanedData[0].vl1 !== null) {
+                document.getElementById('c-ana-electrical').classList.remove('hidden');
+                
+                anaChartsRegistry['c-ana-elec-voltage'] = echarts.init(document.getElementById('c-ana-elec-voltage'));
+                anaChartsRegistry['c-ana-elec-voltage'].setOption({
+                    title: { text: 'Profil des Tensions par Phase (V)', textStyle: { color: c.text, fontSize: 11 } },
+                    tooltip: { trigger: 'axis' },
+                    xAxis: { type: 'category', data: timelineAxis, axisLabel: { show: false } },
+                    yAxis: { type: 'value', scale: true, splitLine: { lineStyle: { color: c.splitLine } }, axisLabel: { color: c.text } },
+                    series: [
+                        { name: 'V L1', type: 'line', data: parsedCleanedData.map(r => r.vl1), itemStyle: { color: 'red' } },
+                        { name: 'V L2', type: 'line', data: parsedCleanedData.map(r => r.vl2), itemStyle: { color: '#eab308' } },
+                        { name: 'V L3', type: 'line', data: parsedCleanedData.map(r => r.vl3), itemStyle: { color: 'blue' } }
+                    ]
+                }, true);
+
+                anaChartsRegistry['c-ana-elec-current'] = echarts.init(document.getElementById('c-ana-elec-current'));
+                anaChartsRegistry['c-ana-elec-current'].setOption({
+                    title: { text: 'Profil des Courants par Phase (A)', textStyle: { color: c.text, fontSize: 11 } },
+                    tooltip: { trigger: 'axis' },
+                    xAxis: { type: 'category', data: timelineAxis, axisLabel: { show: false } },
+                    yAxis: { type: 'value', splitLine: { lineStyle: { color: c.splitLine } }, axisLabel: { color: c.text } },
+                    series: [
+                        { name: 'I L1', type: 'line', data: parsedCleanedData.map(r => r.il1), itemStyle: { color: 'red' } },
+                        { name: 'I L2', type: 'line', data: parsedCleanedData.map(r => r.il2), itemStyle: { color: '#eab308' } },
+                        { name: 'I L3', type: 'line', data: parsedCleanedData.map(r => r.il3), itemStyle: { color: 'blue' } }
+                    ]
+                }, true);
+            } else {
+                document.getElementById('c-ana-electrical').classList.add('hidden');
+            }
+        }
+
+        function buildAnaPreviewTable() {
+            const tableElement = document.getElementById('tbl-ana-preview');
+            const thead = tableElement.querySelector('thead');
+            const tbody = tableElement.querySelector('tbody');
+
+            thead.innerHTML = `<tr>
+                <th class="p-2">Horodatage</th><th class="p-2">Puissance Active P+ (kW)</th><th class="p-2">Puissance Réactive Q+ (kvar)</th>
+                <th class="p-2">Apparente S (kVA)</th><th class="p-2">Taux de Charge (%)</th>
+            </tr>`;
+
+            tbody.innerHTML = parsedCleanedData.slice(0, 100).map(r => `
+                <tr class="hover:bg-slate-800/30 transition-colors">
+                    <td class="p-2 text-slate-300 font-medium">${r.time}</td>
+                    <td class="p-2">${r.p_imp.toFixed(2)}</td>
+                    <td class="p-2">${r.q_imp.toFixed(2)}</td>
+                    <td class="p-2 font-bold text-cyan-400">${r.s_apparent.toFixed(2)}</td>
+                    <td class="p-2 font-bold ${r.tc_rate >= 80 ? 'text-rose-500' : 'text-emerald-400'}">${r.tc_rate.toFixed(1)} %</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('btn-ana-export-csv').onclick = function() {
+                let csvHeaderString = "Datetime,P_Active_Import_kW,P_Active_Export_kW,Q_Reactive_Import_kvar,S_Apparente_kVA,Taux_Charge_Percent,Cos_Phi\n";
+                parsedCleanedData.forEach(r => {
+                    csvHeaderString += `${r.time},${r.p_imp},${r.p_exp},${r.q_imp},${r.s_apparent.toFixed(2)},${r.tc_rate.toFixed(1)},${r.cos_phi_instant.toFixed(3)}\n`;
+                });
+                const blobUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvHeaderString);
+                const downloader = document.createElement('a');
+                downloader.setAttribute('href', blobUrl);
+                downloader.setAttribute('download', `Profil_Nettoye_${Date.now()}.csv`);
+                document.body.appendChild(downloader);
+                downloader.click();
+                document.body.removeChild(downloader);
+            };
+        }
+
+        function resizeAnalyseurCharts() {
+            for (let id in anaChartsRegistry) {
+                if (anaChartsRegistry[id]) anaChartsRegistry[id].resize();
+            }
+        }
     </script>
 </body>
 </html>
