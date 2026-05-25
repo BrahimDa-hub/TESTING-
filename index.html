@@ -303,8 +303,8 @@
 
         <div class="col-span-12 lg:col-span-7 flex flex-col gap-3 min-h-0 h-full overflow-y-auto lg:overflow-visible" id="rightWorkspace">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1 min-h-0">
-                <div class="dashboard-card p-1 flex flex-col min-h-0 h-full chart-container-box">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 flex-1 min-h-0">
+                <div class="dashboard-card p-1 flex flex-col min-h-0 h-full chart-container-box md:col-span-4">
                     <div class="flex justify-between items-center px-2 pt-1 shrink-0">
                         <h2 class="card-title">Transformateur le plus chargé</h2>
                         <select id="gaugeTrSelector" class="themed-select text-[10px] font-semibold rounded px-1.5 py-0.5 outline-none"></select>
@@ -313,7 +313,7 @@
                     <div id="single-gauge-box" class="w-full flex-1 m-0 p-0"></div>
                 </div>
 
-                <div class="dashboard-card p-1 flex flex-col min-h-0 h-full chart-container-box">
+                <div class="dashboard-card p-1 flex flex-col min-h-0 h-full chart-container-box md:col-span-8">
                     <h2 id="treemap-title" class="card-title px-2 pt-1 shrink-0 truncate">Consommation par Poste (Treemap)</h2>
                     <div id="treemapChart" class="w-full flex-1 m-0 p-0"></div>
                 </div>
@@ -988,7 +988,7 @@
             let c = getChartColors();
             gaugeChart.setOption({
                 series: [{
-                    type: 'gauge', startAngle: 180, endAngle: 0, radius: '115%', center: ['50%', '85%'],
+                    type: 'gauge', startAngle: 180, endAngle: 0, radius: '95%', center: ['50%', '75%'],
                     min: 0, max: 150,
                     pointer: { length: '75%', width: 8, itemStyle: { color: c.text } }, // Aiguille adaptative épaissie
                     axisLine: { lineStyle: { width: 22, color: [[1, '#e9ecef']] } }, 
